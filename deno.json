@@ -1,0 +1,29 @@
+{
+  "nodeModulesDir": "manual",
+  "compilerOptions": {
+    "types": [],
+    "lib": [
+      "deno.ns",
+      "deno.unstable",
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable"
+    ],
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "verbatimModuleSyntax": true
+  },
+  "exclude": [
+    "server",
+    "dist",
+    "realm-bundle.tsx",
+    "pnpm-lock.yaml",
+    "e2e",
+    "playwright.config.ts",
+    "test-results",
+    "playwright-report",
+    "web"
+  ]
+}

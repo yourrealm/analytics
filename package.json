@@ -1,0 +1,42 @@
+{
+  "name": "analytics",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "packageManager": "pnpm@10.13.1",
+  "scripts": {
+    "typecheck": "deno check && tsc -p web && cargo clippy --manifest-path server/Cargo.toml --locked --all-targets -- -D warnings",
+    "test": "realm-sdk test && cargo test --manifest-path server/Cargo.toml --locked",
+    "test:e2e": "playwright test",
+    "screenshots": "playwright test screenshots",
+    "fmt": "deno fmt && cargo fmt --manifest-path server/Cargo.toml",
+    "fmt:check": "deno fmt --check && cargo fmt --manifest-path server/Cargo.toml --check",
+    "validate": "realm-sdk validate realm.tsx",
+    "build:pack": "realm-sdk build --out dist/analytics.realmpack",
+    "build:web": "vite build --config web/vite.config.ts",
+    "dev": "vite --config web/vite.config.ts",
+    "dev:server": "ANALYTICS_DATA_DIR=./server/data ANALYTICS_GEOIP=./server/data/geo.mmdb ANALYTICS_WEB_DIR=./web/dist PORT=${ANALYTICS_PORT:-3000} cargo run --manifest-path server/Cargo.toml",
+    "geoip": "sh scripts/geoip.sh server/data/geo.mmdb",
+    "build:image": "docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/yourrealm/analytics:latest ."
+  },
+  "dependencies": {
+    "@yourrealm/sdk": "0.0.0-alpha.1421.7a33686e",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "recharts": "3.10.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@std/assert": "npm:@jsr/std__assert@^1",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "^26.6.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "esbuild": "0.25.7",
+    "tailwindcss": "4.3.3",
+    "typescript": "7.0.2",
+    "vite": "8.3.2"
+  }
+}

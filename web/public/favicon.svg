@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="32 32 336 336" role="img" aria-label="Analytics">
+<title>Analytics</title>
+<style>.dark{display:none}@media (prefers-color-scheme:dark){.light{display:none}.dark{display:inline}}</style>
+<defs><linearGradient id="lgTile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ccc0f6"/><stop offset="1" stop-color="#b4a3f2"/></linearGradient><linearGradient id="lgSign" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fef7ed"/><stop offset="1" stop-color="#fdf3e4"/></linearGradient><filter id="lfTile" x="-45%" y="-45%" width="190%" height="190%" color-interpolation-filters="sRGB">
+<feGaussianBlur in="SourceAlpha" stdDeviation="18" result="dropBlur"/>
+<feOffset in="dropBlur" dx="12" dy="21" result="dropOff"/>
+<feFlood flood-color="#5f5287" flood-opacity="0.28" result="dropColor"/>
+<feComposite in="dropColor" in2="dropOff" operator="in" result="drop"/>
+<feOffset in="SourceAlpha" dx="12" dy="12" result="oL"/>
+<feGaussianBlur in="oL" stdDeviation="12" result="bL"/>
+<feComposite in="SourceAlpha" in2="bL" operator="out" result="rimL"/>
+<feFlood flood-color="#ffffff" flood-opacity="0.85" result="fL"/>
+<feComposite in="fL" in2="rimL" operator="in" result="light"/>
+<feOffset in="SourceAlpha" dx="-12" dy="-12" result="oD"/>
+<feGaussianBlur in="oD" stdDeviation="12" result="bD"/>
+<feComposite in="SourceAlpha" in2="bD" operator="out" result="rimD"/>
+<feFlood flood-color="#5f5287" flood-opacity="0.45" result="fD"/>
+<feComposite in="fD" in2="rimD" operator="in" result="dark"/>
+<feOffset in="SourceAlpha" dx="2" dy="2" result="oS"/>
+<feGaussianBlur in="oS" stdDeviation="1.2" result="bS"/>
+<feComposite in="SourceAlpha" in2="bS" operator="out" result="rimS"/>
+<feFlood flood-color="#ffffff" flood-opacity="0.9" result="fS"/>
+<feComposite in="fS" in2="rimS" operator="in" result="spec"/>
+<feMerge result="clay"><feMergeNode in="drop"/><feMergeNode in="SourceGraphic"/><feMergeNode in="light"/><feMergeNode in="dark"/><feMergeNode in="spec"/></feMerge>
+</filter><filter id="lfSign" x="-45%" y="-45%" width="190%" height="190%" color-interpolation-filters="sRGB">
+<feGaussianBlur in="SourceAlpha" stdDeviation="11" result="dropBlur"/>
+<feOffset in="dropBlur" dx="7" dy="12" result="dropOff"/>
+<feFlood flood-color="#807681" flood-opacity="0.3" result="dropColor"/>
+<feComposite in="dropColor" in2="dropOff" operator="in" result="drop"/>
+<feOffset in="SourceAlpha" dx="7" dy="7" result="oL"/>
+<feGaussianBlur in="oL" stdDeviation="7" result="bL"/>
+<feComposite in="SourceAlpha" in2="bL" operator="out" result="rimL"/>
+<feFlood flood-color="#ffffff" flood-opacity="0.85" result="fL"/>
+<feComposite in="fL" in2="rimL" operator="in" result="light"/>
+<feOffset in="SourceAlpha" dx="-7" dy="-7" result="oD"/>
+<feGaussianBlur in="oD" stdDeviation="7" result="bD"/>
+<feComposite in="SourceAlpha" in2="bD" operator="out" result="rimD"/>
+<feFlood flood-color="#807681" flood-opacity="0.45" result="fD"/>
+<feComposite in="fD" in2="rimD" operator="in" result="dark"/>
+<feOffset in="SourceAlpha" dx="2" dy="2" result="oS"/>
+<feGaussianBlur in="oS" stdDeviation="1.2" result="bS"/>
+<feComposite in="SourceAlpha" in2="bS" operator="out" result="rimS"/>
+<feFlood flood-color="#ffffff" flood-opacity="0.9" result="fS"/>
+<feComposite in="fS" in2="rimS" operator="in" result="spec"/>
+<feMerge result="clay"><feMergeNode in="drop"/><feMergeNode in="SourceGraphic"/><feMergeNode in="light"/><feMergeNode in="dark"/><feMergeNode in="spec"/></feMerge>
+</filter><linearGradient id="dgTile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#524b70"/><stop offset="1" stop-color="#2c2450"/></linearGradient><linearGradient id="dgSign" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ccc0f6"/><stop offset="1" stop-color="#b4a3f2"/></linearGradient><filter id="dfTile" x="-45%" y="-45%" width="190%" height="190%" color-interpolation-filters="sRGB">
+<feGaussianBlur in="SourceAlpha" stdDeviation="21" result="dropBlur"/>
+<feOffset in="dropBlur" dx="14" dy="25" result="dropOff"/>
+<feFlood flood-color="#0d0a1f" flood-opacity="0.45" result="dropColor"/>
+<feComposite in="dropColor" in2="dropOff" operator="in" result="drop"/>
+<feOffset in="SourceAlpha" dx="14" dy="14" result="oL"/>
+<feGaussianBlur in="oL" stdDeviation="14" result="bL"/>
+<feComposite in="SourceAlpha" in2="bL" operator="out" result="rimL"/>
+<feFlood flood-color="#ffffff" flood-opacity="0.35" result="fL"/>
+<feComposite in="fL" in2="rimL" operator="in" result="light"/>
+<feOffset in="SourceAlpha" dx="-14" dy="-14" result="oD"/>
+<feGaussianBlur in="oD" stdDeviation="14" result="bD"/>
+<feComposite in="SourceAlpha" in2="bD" operator="out" result="rimD"/>
+<feFlood flood-color="#0d0a1f" flood-opacity="0.6" result="fD"/>
+<feComposite in="fD" in2="rimD" operator="in" result="dark"/>
+<feOffset in="SourceAlpha" dx="2" dy="2" result="oS"/>
+<feGaussianBlur in="oS" stdDeviation="1.2" result="bS"/>
+<feComposite in="SourceAlpha" in2="bS" operator="out" result="rimS"/>
+<feFlood flood-color="#ffffff" flood-opacity="0.9" result="fS"/>
+<feComposite in="fS" in2="rimS" operator="in" result="spec"/>
+<feMerge result="clay"><feMergeNode in="drop"/><feMergeNode in="SourceGraphic"/><feMergeNode in="light"/><feMergeNode in="dark"/><feMergeNode in="spec"/></feMerge>
+</filter><filter id="dfSign" x="-45%" y="-45%" width="190%" height="190%" color-interpolation-filters="sRGB">
+<feGaussianBlur in="SourceAlpha" stdDeviation="11" result="dropBlur"/>
+<feOffset in="dropBlur" dx="7" dy="12" result="dropOff"/>
+<feFlood flood-color="#5f5287" flood-opacity="0.3" result="dropColor"/>
+<feComposite in="dropColor" in2="dropOff" operator="in" result="drop"/>
+<feOffset in="SourceAlpha" dx="7" dy="7" result="oL"/>
+<feGaussianBlur in="oL" stdDeviation="7" result="bL"/>
+<feComposite in="SourceAlpha" in2="bL" operator="out" result="rimL"/>
+<feFlood flood-color="#ffffff" flood-opacity="0.85" result="fL"/>
+<feComposite in="fL" in2="rimL" operator="in" result="light"/>
+<feOffset in="SourceAlpha" dx="-7" dy="-7" result="oD"/>
+<feGaussianBlur in="oD" stdDeviation="7" result="bD"/>
+<feComposite in="SourceAlpha" in2="bD" operator="out" result="rimD"/>
+<feFlood flood-color="#5f5287" flood-opacity="0.45" result="fD"/>
+<feComposite in="fD" in2="rimD" operator="in" result="dark"/>
+<feOffset in="SourceAlpha" dx="2" dy="2" result="oS"/>
+<feGaussianBlur in="oS" stdDeviation="1.2" result="bS"/>
+<feComposite in="SourceAlpha" in2="bS" operator="out" result="rimS"/>
+<feFlood flood-color="#ffffff" flood-opacity="0.9" result="fS"/>
+<feComposite in="fS" in2="rimS" operator="in" result="spec"/>
+<feMerge result="clay"><feMergeNode in="drop"/><feMergeNode in="SourceGraphic"/><feMergeNode in="light"/><feMergeNode in="dark"/><feMergeNode in="spec"/></feMerge>
+</filter></defs>
+<g class="light"><path d="M 360.0 200.0 L 360.0 231.7 L 359.9 243.1 L 359.8 251.6 L 359.6 258.6 L 359.4 264.7 L 359.1 270.2 L 358.8 275.1 L 358.4 279.6 L 358.0 283.8 L 357.6 287.7 L 357.0 291.4 L 356.5 294.9 L 355.9 298.3 L 355.2 301.4 L 354.5 304.4 L 353.7 307.3 L 352.9 310.0 L 352.0 312.6 L 351.1 315.2 L 350.1 317.6 L 349.1 319.9 L 348.0 322.1 L 346.8 324.3 L 345.6 326.3 L 344.4 328.3 L 343.0 330.2 L 341.7 332.1 L 340.2 333.8 L 338.7 335.5 L 337.2 337.2 L 335.5 338.7 L 333.8 340.2 L 332.1 341.7 L 330.2 343.0 L 328.3 344.4 L 326.3 345.6 L 324.3 346.8 L 322.1 348.0 L 319.9 349.1 L 317.6 350.1 L 315.2 351.1 L 312.6 352.0 L 310.0 352.9 L 307.3 353.7 L 304.4 354.5 L 301.4 355.2 L 298.3 355.9 L 294.9 356.5 L 291.4 357.0 L 287.7 357.6 L 283.8 358.0 L 279.6 358.4 L 275.1 358.8 L 270.2 359.1 L 264.7 359.4 L 258.6 359.6 L 251.6 359.8 L 243.1 359.9 L 231.7 360.0 L 200.0 360.0 L 168.3 360.0 L 156.9 359.9 L 148.4 359.8 L 141.4 359.6 L 135.3 359.4 L 129.8 359.1 L 124.9 358.8 L 120.4 358.4 L 116.2 358.0 L 112.3 357.6 L 108.6 357.0 L 105.1 356.5 L 101.7 355.9 L 98.6 355.2 L 95.6 354.5 L 92.7 353.7 L 90.0 352.9 L 87.4 352.0 L 84.8 351.1 L 82.4 350.1 L 80.1 349.1 L 77.9 348.0 L 75.7 346.8 L 73.7 345.6 L 71.7 344.4 L 69.8 343.0 L 67.9 341.7 L 66.2 340.2 L 64.5 338.7 L 62.8 337.2 L 61.3 335.5 L 59.8 333.8 L 58.3 332.1 L 57.0 330.2 L 55.6 328.3 L 54.4 326.3 L 53.2 324.3 L 52.0 322.1 L 50.9 319.9 L 49.9 317.6 L 48.9 315.2 L 48.0 312.6 L 47.1 310.0 L 46.3 307.3 L 45.5 304.4 L 44.8 301.4 L 44.1 298.3 L 43.5 294.9 L 43.0 291.4 L 42.4 287.7 L 42.0 283.8 L 41.6 279.6 L 41.2 275.1 L 40.9 270.2 L 40.6 264.7 L 40.4 258.6 L 40.2 251.6 L 40.1 243.1 L 40.0 231.7 L 40.0 200.0 L 40.0 168.3 L 40.1 156.9 L 40.2 148.4 L 40.4 141.4 L 40.6 135.3 L 40.9 129.8 L 41.2 124.9 L 41.6 120.4 L 42.0 116.2 L 42.4 112.3 L 43.0 108.6 L 43.5 105.1 L 44.1 101.7 L 44.8 98.6 L 45.5 95.6 L 46.3 92.7 L 47.1 90.0 L 48.0 87.4 L 48.9 84.8 L 49.9 82.4 L 50.9 80.1 L 52.0 77.9 L 53.2 75.7 L 54.4 73.7 L 55.6 71.7 L 57.0 69.8 L 58.3 67.9 L 59.8 66.2 L 61.3 64.5 L 62.8 62.8 L 64.5 61.3 L 66.2 59.8 L 67.9 58.3 L 69.8 57.0 L 71.7 55.6 L 73.7 54.4 L 75.7 53.2 L 77.9 52.0 L 80.1 50.9 L 82.4 49.9 L 84.8 48.9 L 87.4 48.0 L 90.0 47.1 L 92.7 46.3 L 95.6 45.5 L 98.6 44.8 L 101.7 44.1 L 105.1 43.5 L 108.6 43.0 L 112.3 42.4 L 116.2 42.0 L 120.4 41.6 L 124.9 41.2 L 129.8 40.9 L 135.3 40.6 L 141.4 40.4 L 148.4 40.2 L 156.9 40.1 L 168.3 40.0 L 200.0 40.0 L 231.7 40.0 L 243.1 40.1 L 251.6 40.2 L 258.6 40.4 L 264.7 40.6 L 270.2 40.9 L 275.1 41.2 L 279.6 41.6 L 283.8 42.0 L 287.7 42.4 L 291.4 43.0 L 294.9 43.5 L 298.3 44.1 L 301.4 44.8 L 304.4 45.5 L 307.3 46.3 L 310.0 47.1 L 312.6 48.0 L 315.2 48.9 L 317.6 49.9 L 319.9 50.9 L 322.1 52.0 L 324.3 53.2 L 326.3 54.4 L 328.3 55.6 L 330.2 57.0 L 332.1 58.3 L 333.8 59.8 L 335.5 61.3 L 337.2 62.8 L 338.7 64.5 L 340.2 66.2 L 341.7 67.9 L 343.0 69.8 L 344.4 71.7 L 345.6 73.7 L 346.8 75.7 L 348.0 77.9 L 349.1 80.1 L 350.1 82.4 L 351.1 84.8 L 352.0 87.4 L 352.9 90.0 L 353.7 92.7 L 354.5 95.6 L 355.2 98.6 L 355.9 101.7 L 356.5 105.1 L 357.0 108.6 L 357.6 112.3 L 358.0 116.2 L 358.4 120.4 L 358.8 124.9 L 359.1 129.8 L 359.4 135.3 L 359.6 141.4 L 359.8 148.4 L 359.9 156.9 L 360.0 168.3 Z" fill="url(#lgTile)" filter="url(#lfTile)"/><g filter="url(#lfSign)"><g transform="translate(200 200) scale(0.8846) translate(-128.00 -124.00)" fill="url(#lgSign)"><path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1,0-16h8V136a8,8,0,0,1,8-8H72a8,8,0,0,1,8,8v64H96V88a8,8,0,0,1,8-8h32a8,8,0,0,1,8,8V200h16V40a8,8,0,0,1,8-8h40a8,8,0,0,1,8,8V200h8A8,8,0,0,1,232,208Z"/></g></g></g>
+<g class="dark"><path d="M 360.0 200.0 L 360.0 231.7 L 359.9 243.1 L 359.8 251.6 L 359.6 258.6 L 359.4 264.7 L 359.1 270.2 L 358.8 275.1 L 358.4 279.6 L 358.0 283.8 L 357.6 287.7 L 357.0 291.4 L 356.5 294.9 L 355.9 298.3 L 355.2 301.4 L 354.5 304.4 L 353.7 307.3 L 352.9 310.0 L 352.0 312.6 L 351.1 315.2 L 350.1 317.6 L 349.1 319.9 L 348.0 322.1 L 346.8 324.3 L 345.6 326.3 L 344.4 328.3 L 343.0 330.2 L 341.7 332.1 L 340.2 333.8 L 338.7 335.5 L 337.2 337.2 L 335.5 338.7 L 333.8 340.2 L 332.1 341.7 L 330.2 343.0 L 328.3 344.4 L 326.3 345.6 L 324.3 346.8 L 322.1 348.0 L 319.9 349.1 L 317.6 350.1 L 315.2 351.1 L 312.6 352.0 L 310.0 352.9 L 307.3 353.7 L 304.4 354.5 L 301.4 355.2 L 298.3 355.9 L 294.9 356.5 L 291.4 357.0 L 287.7 357.6 L 283.8 358.0 L 279.6 358.4 L 275.1 358.8 L 270.2 359.1 L 264.7 359.4 L 258.6 359.6 L 251.6 359.8 L 243.1 359.9 L 231.7 360.0 L 200.0 360.0 L 168.3 360.0 L 156.9 359.9 L 148.4 359.8 L 141.4 359.6 L 135.3 359.4 L 129.8 359.1 L 124.9 358.8 L 120.4 358.4 L 116.2 358.0 L 112.3 357.6 L 108.6 357.0 L 105.1 356.5 L 101.7 355.9 L 98.6 355.2 L 95.6 354.5 L 92.7 353.7 L 90.0 352.9 L 87.4 352.0 L 84.8 351.1 L 82.4 350.1 L 80.1 349.1 L 77.9 348.0 L 75.7 346.8 L 73.7 345.6 L 71.7 344.4 L 69.8 343.0 L 67.9 341.7 L 66.2 340.2 L 64.5 338.7 L 62.8 337.2 L 61.3 335.5 L 59.8 333.8 L 58.3 332.1 L 57.0 330.2 L 55.6 328.3 L 54.4 326.3 L 53.2 324.3 L 52.0 322.1 L 50.9 319.9 L 49.9 317.6 L 48.9 315.2 L 48.0 312.6 L 47.1 310.0 L 46.3 307.3 L 45.5 304.4 L 44.8 301.4 L 44.1 298.3 L 43.5 294.9 L 43.0 291.4 L 42.4 287.7 L 42.0 283.8 L 41.6 279.6 L 41.2 275.1 L 40.9 270.2 L 40.6 264.7 L 40.4 258.6 L 40.2 251.6 L 40.1 243.1 L 40.0 231.7 L 40.0 200.0 L 40.0 168.3 L 40.1 156.9 L 40.2 148.4 L 40.4 141.4 L 40.6 135.3 L 40.9 129.8 L 41.2 124.9 L 41.6 120.4 L 42.0 116.2 L 42.4 112.3 L 43.0 108.6 L 43.5 105.1 L 44.1 101.7 L 44.8 98.6 L 45.5 95.6 L 46.3 92.7 L 47.1 90.0 L 48.0 87.4 L 48.9 84.8 L 49.9 82.4 L 50.9 80.1 L 52.0 77.9 L 53.2 75.7 L 54.4 73.7 L 55.6 71.7 L 57.0 69.8 L 58.3 67.9 L 59.8 66.2 L 61.3 64.5 L 62.8 62.8 L 64.5 61.3 L 66.2 59.8 L 67.9 58.3 L 69.8 57.0 L 71.7 55.6 L 73.7 54.4 L 75.7 53.2 L 77.9 52.0 L 80.1 50.9 L 82.4 49.9 L 84.8 48.9 L 87.4 48.0 L 90.0 47.1 L 92.7 46.3 L 95.6 45.5 L 98.6 44.8 L 101.7 44.1 L 105.1 43.5 L 108.6 43.0 L 112.3 42.4 L 116.2 42.0 L 120.4 41.6 L 124.9 41.2 L 129.8 40.9 L 135.3 40.6 L 141.4 40.4 L 148.4 40.2 L 156.9 40.1 L 168.3 40.0 L 200.0 40.0 L 231.7 40.0 L 243.1 40.1 L 251.6 40.2 L 258.6 40.4 L 264.7 40.6 L 270.2 40.9 L 275.1 41.2 L 279.6 41.6 L 283.8 42.0 L 287.7 42.4 L 291.4 43.0 L 294.9 43.5 L 298.3 44.1 L 301.4 44.8 L 304.4 45.5 L 307.3 46.3 L 310.0 47.1 L 312.6 48.0 L 315.2 48.9 L 317.6 49.9 L 319.9 50.9 L 322.1 52.0 L 324.3 53.2 L 326.3 54.4 L 328.3 55.6 L 330.2 57.0 L 332.1 58.3 L 333.8 59.8 L 335.5 61.3 L 337.2 62.8 L 338.7 64.5 L 340.2 66.2 L 341.7 67.9 L 343.0 69.8 L 344.4 71.7 L 345.6 73.7 L 346.8 75.7 L 348.0 77.9 L 349.1 80.1 L 350.1 82.4 L 351.1 84.8 L 352.0 87.4 L 352.9 90.0 L 353.7 92.7 L 354.5 95.6 L 355.2 98.6 L 355.9 101.7 L 356.5 105.1 L 357.0 108.6 L 357.6 112.3 L 358.0 116.2 L 358.4 120.4 L 358.8 124.9 L 359.1 129.8 L 359.4 135.3 L 359.6 141.4 L 359.8 148.4 L 359.9 156.9 L 360.0 168.3 Z" fill="url(#dgTile)" filter="url(#dfTile)"/><g filter="url(#dfSign)"><g transform="translate(200 200) scale(0.8846) translate(-128.00 -124.00)" fill="url(#dgSign)"><path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1,0-16h8V136a8,8,0,0,1,8-8H72a8,8,0,0,1,8,8v64H96V88a8,8,0,0,1,8-8h32a8,8,0,0,1,8,8V200h16V40a8,8,0,0,1,8-8h40a8,8,0,0,1,8,8V200h8A8,8,0,0,1,232,208Z"/></g></g></g>
+</svg>

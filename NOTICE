@@ -1,0 +1,35 @@
+analytics
+Copyright (C) 2026 Max Malm
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, version 3 (see LICENSE).
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+This project includes code and data from third parties, under their own
+licenses:
+
+- server/assets/tracker.js is the built tracker script of Liwan
+  (https://github.com/explodingcamera/liwan, packages/tracker, liwan-tracker
+  1.3.0, commit a075d83), copyright Henry Gressmann, licensed under the
+  Apache License, Version 2.0 (LICENSES/Apache-2.0.txt). It is included
+  unmodified and stays under that license, so a website that loads it is not
+  bound by the AGPL.
+
+- server/src/visitor.rs (the cookieless visitor ID and daily salt rotation),
+  server/src/hosts.rs (allowed-hostname patterns) and the event validation and
+  filtering in server/src/ingest.rs are adapted from Liwan, copyright Henry
+  Gressmann, under the Apache License, Version 2.0 (LICENSES/Apache-2.0.txt).
+  They were rewritten for this project; the changes are under the AGPL.
+
+- web/public holds the app mark from realm-icons (yourrealm/icons): Realm's
+  clay mark with Phosphor's chart-bar icon (https://phosphoricons.com, MIT
+  License).
+
+- The Docker image contains the DB-IP IP to Country Lite database
+  (https://db-ip.com), licensed under the Creative Commons Attribution 4.0
+  International License (https://creativecommons.org/licenses/by/4.0/).
+  IP Geolocation by DB-IP.

@@ -1,0 +1,12 @@
+# Only the container's inputs: the server, the frontend and the GeoIP script.
+# realm.tsx, node_modules and build output stay out.
+*
+!server/
+!scripts/geoip.sh
+!web/
+!package.json
+!pnpm-lock.yaml
+!.npmrc
+server/target/
+server/data/
+web/dist/

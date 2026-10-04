@@ -1,0 +1,52 @@
+// The React dashboard, as an owner would use it. The Realm gate would inject
+// X-Analytics-User; here the owner's browser context sends it itself.
+
+import { expect, test } from "@playwright/test";
+import { SERVER, SITE_PORT_NUMBER } from "../playwright.config.ts";
+
+test("add a site, get its snippet, see a visit on the dashboard", async ({ browser }) => {
+  const owner = await browser.newContext({
+    extraHTTPHeaders: { "X-Analytics-User": `e2e-${crypto.randomUUID()}` },
+  });
+  const app = await owner.newPage();
+
+  // No sites yet: the dashboard points to the Sites view.
+  await app.goto(SERVER);
+  await expect(app.getByRole("heading", { name: "No sites yet" })).toBeVisible();
+  await app.getByRole("link", { name: "Add a site" }).click();
+  await expect(app).toHaveURL(`${SERVER}/sites`);
+
+  await app.getByLabel("Site name").fill("Blog");
+  await app.getByLabel("Allowed hostnames").fill("site.test");
+  await app.getByRole("button", { name: "Add site" }).click();
+
+  const snippet = app.getByLabel("Tracking snippet");
+  await expect(snippet).toContainText(`src="${SERVER}/script.js"`);
+  const site = (await snippet.textContent())!.match(/data-entity="([a-z0-9]+)"/)![1]!;
+
+  // A visitor, in a context without the owner's header.
+  const visitor = await browser.newPage();
+  const sent = visitor.waitForResponse((r) => r.url() === `${SERVER}/api/event`);
+  await visitor.goto(`http://site.test:${SITE_PORT_NUMBER}/?site=${site}`, {
+    referer: "https://news.ycombinator.com/",
+  });
+  expect((await sent).status()).toBe(204);
+
+  await app.getByRole("link", { name: "Dashboard" }).click();
+  await app.getByRole("tab", { name: "Today" }).click();
+  await expect(app).toHaveURL(/period=today/);
+  await expect(app.getByRole("button", { name: /Visitors\s*1/ })).toBeVisible();
+  await expect(app.getByRole("button", { name: /Pageviews\s*1/ })).toBeVisible();
+  await expect(app.locator("section", { hasText: "Referrers" })).toContainText("news.ycombinator.com");
+
+  // The filter survives a reload: it lives in the URL.
+  await app.reload();
+  await expect(app.getByRole("tab", { name: "Today" })).toHaveAttribute("aria-selected", "true");
+
+  await owner.close();
+});
+
+test("without the identity header the API refuses", async ({ request }) => {
+  const res = await request.get(`${SERVER}/api/sites`);
+  expect(res.status()).toBe(401);
+});

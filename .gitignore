@@ -1,0 +1,10 @@
+node_modules
+dist
+target
+realm-bundle.tsx
+.DS_Store
+*.log
+server/data
+test-results
+playwright-report
+e2e/screenshots
