@@ -10,9 +10,10 @@ MB and idles near 2 MiB of memory.
 
 ## Install on Realm
 
-Install it from `realm.tsx`: build the pack with `pnpm build:pack` and choose
-`dist/analytics.realmpack` (or paste `realm.tsx`) in Home's install form. The
-image is `ghcr.io/yourrealm/analytics`, for amd64 and arm64.
+Paste [`realm.tsx`](realm.tsx) into Home's install form, or choose the file.
+That is the whole app definition, so there is nothing to build: Home bundles it,
+and CI publishes the image, `ghcr.io/yourrealm/analytics`, for amd64 and arm64.
+To update, use **Replace source…** on the app's Updates tab.
 
 The install screen asks for one optional permission: internet access. It is
 needed only for Google Search Console. Without it, visit counting works the
