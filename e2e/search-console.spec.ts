@@ -2,8 +2,15 @@
 // Settings, pick a property for a site in Sites, see search terms on the
 // dashboard. Google is e2e/google.mjs.
 
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import { SERVER, SERVICE_ACCOUNT } from "../playwright.config.ts";
+
+/** Through the overview to Blog's dashboard. */
+async function openDashboard(app: Page) {
+  await app.getByRole("link", { name: "Overview" }).click();
+  await app.getByRole("link", { name: "Blog", exact: true }).click();
+  await expect(app.getByRole("tab", { name: "30 days" })).toBeVisible();
+}
 
 test("connect a service account, link a property, see search terms", async ({ browser }) => {
   const headers = { "X-Analytics-User": `e2e-${crypto.randomUUID()}` };
@@ -47,7 +54,7 @@ test("connect a service account, link a property, see search terms", async ({ br
   await picker.selectOption("sc-domain:blog.example");
   await expect(picker).toHaveValue("sc-domain:blog.example");
 
-  await app.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await openDashboard(app);
   const card = app.locator("section", { hasText: "Search terms" });
   await expect(card).toContainText("realm self hosted");
   await expect(card).toContainText("99 clicks from 3,580 impressions");
@@ -61,7 +68,7 @@ test("connect a service account, link a property, see search terms", async ({ br
   await expect(app.getByText("Linked: Blog → sc-domain:blog.example.", { exact: false })).toBeVisible();
   await app.getByRole("button", { name: "Disconnect" }).click();
   await expect(app.getByRole("button", { name: /Choose that file here/ })).toBeVisible();
-  await app.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await openDashboard(app);
   await expect(app.locator("section", { hasText: "Search terms" })).toHaveCount(0);
   await owner.close();
 });

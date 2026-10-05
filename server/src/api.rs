@@ -127,7 +127,7 @@ pub fn router(state: AppState, web: Option<&FsPath>) -> Router {
         .route("/api/sites/{id}", put(update_site).delete(delete_site))
         .route("/api/sites/{id}/stats", get(site_stats))
         .route("/api/sites/{id}/props", get(site_props))
-        .route("/api/summary", get(summary))
+        .route("/api/overview", get(overview))
         .route(
             "/api/google",
             get(google_status)
@@ -574,32 +574,31 @@ async fn site_props(
 }
 
 #[derive(serde::Serialize)]
-struct SiteSummary {
+struct SiteGlance {
     id: String,
     name: String,
-    visitors: i64,
-    pageviews: i64,
+    /// The first allowed hostname, to tell sites apart.
+    host: Option<String>,
+    #[serde(flatten)]
+    glance: stats::Glance,
 }
 
-/// Today's numbers for every site of the user, for the widget.
-async fn summary(
+/// Every site of the user over the last 24 hours, for the overview.
+async fn overview(
     State(state): State<AppState>,
     Identity(user): Identity,
-) -> Result<Json<Vec<SiteSummary>>, ApiError> {
+) -> Result<Json<Vec<SiteGlance>>, ApiError> {
     let now = state.now();
     let rows = state
         .db(move |c| {
-            let tz = TimeZone::get(&user.timezone).unwrap_or(TimeZone::UTC);
-            let range = stats::range(Period::Today, now, &tz);
             db::list_sites(c, user.id)?
                 .into_iter()
                 .map(|s| {
-                    let t = stats::totals(c, &s.id, &range)?;
-                    Ok(SiteSummary {
+                    Ok(SiteGlance {
+                        glance: stats::glance(c, &s.id, now)?,
+                        host: s.hostnames.into_iter().next(),
                         id: s.id,
                         name: s.name,
-                        visitors: t.visitors,
-                        pageviews: t.pageviews,
                     })
                 })
                 .collect::<rusqlite::Result<Vec<_>>>()
@@ -908,7 +907,7 @@ mod tests {
     #[tokio::test]
     async fn owner_routes_need_the_header() {
         let app = app();
-        for path in ["/api/me", "/api/sites", "/api/summary"] {
+        for path in ["/api/me", "/api/sites", "/api/overview"] {
             let (status, _, _) = call(&app, request(Method::GET, path, &[], None)).await;
             assert_eq!(status, StatusCode::UNAUTHORIZED, "{path}");
         }
@@ -1035,8 +1034,11 @@ mod tests {
         .await;
         assert_eq!(p[0]["value"], "pro");
 
-        let (_, _, sum) = call(&app, request(Method::GET, "/api/summary", &[ANN], None)).await;
-        assert_eq!(sum[0]["visitors"], 2);
+        let (_, _, all) = call(&app, request(Method::GET, "/api/overview", &[ANN], None)).await;
+        assert_eq!(all[0]["id"], id);
+        assert_eq!(all[0]["visitors"], 2);
+        assert_eq!(all[0]["previous"], 0);
+        assert_eq!(all[0]["series"].as_array().unwrap().len(), 24);
     }
 
     #[tokio::test]

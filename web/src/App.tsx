@@ -1,12 +1,13 @@
 import { type Me, useApi } from "./api.ts";
 import { Dashboard } from "./Dashboard.tsx";
+import { Overview } from "./Overview.tsx";
 import { navigate, useRoute, type View } from "./route.ts";
 import { Settings } from "./Settings.tsx";
 import { Sites } from "./Sites.tsx";
 import { ErrorText } from "./ui.tsx";
 
 const NAV: { view: View; label: string; href: string }[] = [
-  { view: "dashboard", label: "Dashboard", href: "/" },
+  { view: "dashboard", label: "Overview", href: "/" },
   { view: "sites", label: "Sites", href: "/sites" },
   { view: "settings", label: "Settings", href: "/settings" },
 ];
@@ -48,7 +49,9 @@ export function App() {
           ? <Sites query={query} />
           : view === "settings"
           ? <Settings me={me.data} reloadMe={me.reload} />
-          : <Dashboard query={query} me={me.data} />}
+          : query.get("site")
+          ? <Dashboard query={query} me={me.data} />
+          : <Overview />}
       </main>
     </div>
   );

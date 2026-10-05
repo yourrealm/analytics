@@ -10,11 +10,11 @@ test("add a site, get its snippet, see a visit on the dashboard", async ({ brows
   });
   const app = await owner.newPage();
 
-  // No sites yet: the dashboard points to the Sites view.
+  // No sites yet: the overview points to the add form.
   await app.goto(SERVER);
   await expect(app.getByRole("heading", { name: "No sites yet" })).toBeVisible();
   await app.getByRole("link", { name: "Add a site" }).click();
-  await expect(app).toHaveURL(`${SERVER}/sites`);
+  await expect(app).toHaveURL(`${SERVER}/sites?site=new`);
 
   await app.getByLabel("Site name").fill("Blog");
   await app.getByLabel("Allowed hostnames").fill("site.test");
@@ -40,7 +40,12 @@ test("add a site, get its snippet, see a visit on the dashboard", async ({ brows
   await expect(app.getByText(/Last event just now/)).toBeVisible();
   await expect(app.getByRole("button", { name: /Blog/ })).toContainText("1");
 
-  await app.getByRole("link", { name: "Dashboard", exact: true }).click();
+  // The overview has a card for it; the card opens the dashboard.
+  await app.getByRole("link", { name: "Overview" }).click();
+  const card = app.locator("article", { hasText: "Blog" });
+  await expect(card).toContainText(/1\s*visitor in last 24h/);
+  await card.getByRole("link", { name: "Blog", exact: true }).click();
+  await expect(app).toHaveURL(new RegExp(`site=${site}`));
   await app.getByRole("tab", { name: "Today" }).click();
   await expect(app).toHaveURL(/period=today/);
   await expect(app.getByRole("button", { name: /Visitors\s*1/ })).toBeVisible();

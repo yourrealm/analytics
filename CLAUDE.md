@@ -13,9 +13,10 @@ sites, with its own React dashboard behind Realm's login.
   the JSON API and the built dashboard. With DB-IP's country database it is the
   whole Docker image (`ghcr.io/yourrealm/analytics`, distroless/cc, amd64 and
   arm64). It idles near 2 MiB.
-- `web/`: React 19 + Vite + Tailwind 4 + Recharts. Three views, `/` (dashboard),
-  `/sites` and `/settings`, with filters in the URL. `web/src/api.ts` mirrors
-  the server's response shapes, so change both together.
+- `web/`: React 19 + Vite + Tailwind 4 + Recharts. `/` is the overview of all
+  sites, `/?site=<id>` one site's dashboard, plus `/sites` and `/settings`, with
+  filters in the URL. `web/src/api.ts` mirrors the server's response shapes, so
+  change both together.
 - `realm.tsx`: the Realm manifest (service, gate, trusted header, tile). It has
   no Realm UI surfaces and never runs in the container. We dropped the SDK pages
   for a real frontend.
@@ -158,6 +159,10 @@ up new DB-IP data.
   `/assets/*` is cached as immutable (Vite fingerprints it). Any other non-API
   path falls back to `index.html` with `no-cache`, so client-side routes load.
   Unknown `/api/*` paths stay JSON 404s.
+- The overview (`/` without `?site`) is a card per site, as on Plausible's home:
+  `GET /api/overview` gives visitors in the last 24 hours, in the 24 before, and
+  per hour (`stats::glance`). The window is rolling, so no time zone, and it
+  includes the current second.
 - Sites is a list and a detail panel, stacked on a phone. `?site=<id>` picks a
   site and `?site=new` opens the add form (also shown when there are none).
   `GET /api/sites` adds `last_event` and 7-day `visitors` per site
@@ -173,7 +178,7 @@ up new DB-IP data.
   (logo, dark logo, favicon SVG and ICO, 512 px PNG). `router.icon` hotlinks
   `logo.svg` through jsDelivr from `yourrealm/analytics@main`.
 - `e2e/screenshots.spec.ts` seeds a month of traffic through the real ingest
-  API, backdates it in SQLite, and screenshots both views in light, dark and
+  API, backdates it in SQLite, and screenshots every view in light, dark and
   phone. With `server/data/geo.mmdb` present (`pnpm geoip`) countries resolve.
   CI uploads the folder as an artifact.
 - Theme: CSS variables in `index.css`, light and dark via

@@ -28,12 +28,15 @@ let seed = 7;
 const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
 const pick = <T>(xs: T[]) => xs[Math.floor(rand() * xs.length)]!;
 
+// The seeded site's id, for dashboard paths ("SITE" in them).
+let site = "";
+
 test.beforeAll(async ({ request }) => {
   const created = await request.post(`${SERVER}/api/sites`, {
     headers: owner,
     data: { name: "blog.example", hostnames: ["blog.example"] },
   });
-  const site = (await created.json()).id as string;
+  site = (await created.json()).id as string;
   await request.post(`${SERVER}/api/sites`, { headers: owner, data: { name: "shop.example", hostnames: [] } });
   await request.put(`${SERVER}/api/settings`, { headers: owner, data: { timezone: "Europe/Stockholm" } });
   // Search Console against e2e/google.mjs, so the Search terms card shows.
@@ -87,7 +90,7 @@ const shoot = (name: string, options: BrowserContextOptions, path: string) =>
   test(name, async ({ browser }) => {
     const ctx = await browser.newContext({ ...options, extraHTTPHeaders: owner });
     const page = await ctx.newPage();
-    await page.goto(`${SERVER}${path}`);
+    await page.goto(`${SERVER}${path.replace("SITE", site)}`);
     // Data has arrived and the chart has drawn.
     await expect(page.getByRole("heading", { name: "No sites yet" })).toHaveCount(0);
     await page.waitForLoadState("networkidle");
@@ -98,10 +101,13 @@ const shoot = (name: string, options: BrowserContextOptions, path: string) =>
 const desktop = { viewport: { width: 1280, height: 900 } };
 const phone = { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true };
 
-shoot("dashboard-light", { ...desktop, colorScheme: "light" }, "/?event=signup");
-shoot("dashboard-dark", { ...desktop, colorScheme: "dark" }, "/?event=signup");
-shoot("dashboard-7d-pageviews", { ...desktop, colorScheme: "light" }, "/?period=7d&metric=pageviews");
-shoot("dashboard-phone", { ...phone, colorScheme: "light" }, "/");
+shoot("overview-light", { ...desktop, colorScheme: "light" }, "/");
+shoot("overview-dark", { ...desktop, colorScheme: "dark" }, "/");
+shoot("overview-phone", { ...phone, colorScheme: "light" }, "/");
+shoot("dashboard-light", { ...desktop, colorScheme: "light" }, "/?site=SITE&event=signup");
+shoot("dashboard-dark", { ...desktop, colorScheme: "dark" }, "/?site=SITE&event=signup");
+shoot("dashboard-7d-pageviews", { ...desktop, colorScheme: "light" }, "/?site=SITE&period=7d&metric=pageviews");
+shoot("dashboard-phone", { ...phone, colorScheme: "light" }, "/?site=SITE");
 shoot("sites-light", { ...desktop, colorScheme: "light" }, "/sites");
 shoot("sites-dark", { ...desktop, colorScheme: "dark" }, "/sites");
 shoot("sites-phone", { ...phone, colorScheme: "light" }, "/sites");

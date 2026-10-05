@@ -1,4 +1,4 @@
-// Three views and some query parameters don't need a router library: the path
+// A few views and some query parameters don't need a router library: the path
 // picks the view, the query holds the dashboard's filters, so every view can
 // be bookmarked.
 

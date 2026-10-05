@@ -13,6 +13,18 @@ export type Site = {
   search_console: string | null;
 };
 
+/** A site on the overview: visitors over the last 24 hours. */
+export type Glance = {
+  id: string;
+  name: string;
+  host: string | null;
+  visitors: number;
+  /** Visitors in the 24 hours before. */
+  previous: number;
+  /** Visitors per hour, oldest first, 24 of them. */
+  series: number[];
+};
+
 /** A site in the Sites list, with what it has seen lately. */
 export type SiteActivity = Site & {
   /** Seconds since the epoch; null until the first visit. */

@@ -220,6 +220,13 @@ export function Dashboard({ query, me }: { query: URLSearchParams; me: Me | unde
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
+        <a
+          href="/"
+          onClick={(e) => (e.preventDefault(), navigate("/"))}
+          className="text-sm text-muted hover:text-fg"
+        >
+          ← All sites
+        </a>
         {list.length > 1
           ? (
             <select

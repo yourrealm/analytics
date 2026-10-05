@@ -173,6 +173,42 @@ pub fn totals(conn: &Connection, site: &str, r: &Range) -> rusqlite::Result<Tota
     )
 }
 
+/// A site at a glance, for the overview: visitors in the last 24 hours, in
+/// the 24 before, and per hour.
+#[derive(Debug, Serialize, PartialEq, Eq)]
+pub struct Glance {
+    pub visitors: i64,
+    pub previous: i64,
+    pub series: Vec<i64>,
+}
+
+/// `hours` hourly buckets ending at `now`. Rolling, so no time zone.
+fn last_hours(now: i64, hours: i64) -> Range {
+    let start = now - hours * 3600;
+    Range {
+        start,
+        end: now,
+        bucket: Bucket::Hour,
+        starts: (0..hours).map(|h| start + h * 3600).collect(),
+        from: String::new(),
+        to: String::new(),
+    }
+}
+
+pub fn glance(conn: &Connection, site: &str, now: i64) -> rusqlite::Result<Glance> {
+    // Up to and including this second, so a visit just now counts.
+    let day = last_hours(now + 1, 24);
+    let before = last_hours(now + 1 - 86400, 24);
+    Ok(Glance {
+        visitors: totals(conn, site, &day)?.visitors,
+        previous: totals(conn, site, &before)?.visitors,
+        series: series(conn, site, &day)?
+            .into_iter()
+            .map(|p| p.visitors)
+            .collect(),
+    })
+}
+
 pub fn stats(conn: &Connection, site: &str, r: &Range) -> rusqlite::Result<Stats> {
     let totals = totals(conn, site, r)?;
     Ok(Stats {
@@ -390,6 +426,13 @@ mod tests {
                 visitors: 1
             }]
         );
+
+        let g = glance(&conn, "s1", r.start + day + 3599).unwrap();
+        // The last 24 h hold b and c, in the final hour; the 24 before, a and z.
+        assert_eq!((g.visitors, g.previous), (2, 2));
+        assert_eq!(g.series.len(), 24);
+        assert_eq!(g.series[23], 2);
+        assert_eq!(g.series.iter().sum::<i64>(), 2);
 
         let p = props(&conn, "s1", &r, "signup").unwrap();
         assert_eq!(
