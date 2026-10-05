@@ -35,10 +35,9 @@ test("add a site, get its snippet, see a visit on the dashboard", async ({ brows
   });
   expect((await sent).status()).toBe(204);
 
-  // The Sites list sees it: the snippet works, one visitor this week.
+  // The Sites view sees it: the snippet works.
   await app.reload();
   await expect(app.getByText(/Last event just now/)).toBeVisible();
-  await expect(app.getByRole("button", { name: /Blog/ })).toContainText("1");
 
   // The overview has a card for it; the card opens the dashboard.
   await app.getByRole("link", { name: "Overview" }).click();

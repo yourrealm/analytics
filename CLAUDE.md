@@ -165,8 +165,8 @@ up new DB-IP data.
   includes the current second.
 - Sites is a list and a detail panel, stacked on a phone. `?site=<id>` picks a
   site and `?site=new` opens the add form (also shown when there are none).
-  `GET /api/sites` adds `last_event` and 7-day `visitors` per site
-  (`db::list_sites_activity`) for the status dot and the count. Settings holds
+  `GET /api/sites` adds each site's `last_event` (`db::list_sites_activity`) for
+  the status dot. Visitor counts live on the overview, not here. Settings holds
   what is per user: the Search Console account (a collapsible step guide until
   connected) and the time zone.
 - No router or data library: `route.ts` (path plus query, history API) and

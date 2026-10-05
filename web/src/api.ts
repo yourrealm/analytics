@@ -25,12 +25,10 @@ export type Glance = {
   series: number[];
 };
 
-/** A site in the Sites list, with what it has seen lately. */
+/** A site in the Sites list, with when it last saw an event. */
 export type SiteActivity = Site & {
   /** Seconds since the epoch; null until the first visit. */
   last_event: number | null;
-  /** Distinct visitors over the last 7 days. */
-  visitors: number;
 };
 
 /** `available` is false when the operator did not grant internet access. */

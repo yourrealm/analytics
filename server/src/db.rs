@@ -207,37 +207,28 @@ pub fn list_sites(conn: &Connection, user_id: i64) -> rusqlite::Result<Vec<Site>
     stmt.query_map([user_id], site_from)?.collect()
 }
 
-/// A site with what it has seen lately, for the Sites list: whether the
-/// snippet works yet, and how busy it is.
+/// A site with when it last saw an event, for the Sites list: whether the
+/// snippet works yet.
 #[derive(Debug, serde::Serialize)]
 pub struct SiteActivity {
     #[serde(flatten)]
     pub site: Site,
     /// When its last event arrived, in seconds. `None` until the first visit.
     pub last_event: Option<i64>,
-    /// Distinct visitors since `since`.
-    pub visitors: i64,
 }
 
-/// The user's sites, with their last event and visitors since `since`. Both
-/// subqueries run on the `events_site_ts` index.
-pub fn list_sites_activity(
-    conn: &Connection,
-    user_id: i64,
-    since: i64,
-) -> rusqlite::Result<Vec<SiteActivity>> {
+/// The user's sites, with their last event. The subquery runs on the
+/// `events_site_ts` index.
+pub fn list_sites_activity(conn: &Connection, user_id: i64) -> rusqlite::Result<Vec<SiteActivity>> {
     let mut stmt = conn.prepare(&format!(
         "SELECT {SITE_COLUMNS},
-            (SELECT MAX(ts) FROM events e WHERE e.site_id = sites.id) AS last_event,
-            (SELECT COUNT(DISTINCT visitor) FROM events e
-             WHERE e.site_id = sites.id AND e.ts >= ?2) AS visitors
+            (SELECT MAX(ts) FROM events e WHERE e.site_id = sites.id) AS last_event
          FROM sites WHERE user_id = ?1 ORDER BY created_at, id"
     ))?;
-    stmt.query_map(params![user_id, since], |r| {
+    stmt.query_map([user_id], |r| {
         Ok(SiteActivity {
             site: site_from(r)?,
             last_event: r.get("last_event")?,
-            visitors: r.get("visitors")?,
         })
     })?
     .collect()

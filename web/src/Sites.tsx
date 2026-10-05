@@ -7,7 +7,7 @@ import { type FormEvent, useState } from "react";
 import { api, type Google, type Site, type SiteActivity, useApi } from "./api.ts";
 import { navigate, withQuery } from "./route.ts";
 import { PropertyPicker } from "./SearchConsole.tsx";
-import { Button, ErrorText, fmt, Input } from "./ui.tsx";
+import { Button, ErrorText, Input } from "./ui.tsx";
 
 /** "a.com, *.b.com" or one per line, into a list. */
 const hostList = (text: string) => text.split(/[\s,]+/).map((h) => h.trim()).filter(Boolean);
@@ -92,12 +92,8 @@ function SiteList({ sites, selected }: { sites: SiteActivity[]; selected: string
             <span className="truncate">{s.name}</span>
             <span className="truncate text-xs font-normal text-muted">{s.hostnames[0] ?? "any host"}</span>
           </span>
-          <span className="text-xs font-normal tabular-nums text-muted" title="Visitors, last 7 days">
-            {fmt(s.visitors)}
-          </span>
         </button>
       ))}
-      {sites.length > 0 && <p className="px-2.5 pt-2 text-xs text-muted">Visitors over the last 7 days.</p>}
     </section>
   );
 }
