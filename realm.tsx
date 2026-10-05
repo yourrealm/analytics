@@ -71,12 +71,13 @@ export default createApp({
         },
         router: {
           containerPort: 3000,
-          // The tile opens the dashboard.
+          // The tile opens the dashboard, under a capitalized label (the
+          // app's own name stays lowercase, as an identifier).
           tile: true,
+          name: "Analytics",
           // Home fetches the icon itself, once, and needs a public https URL
-          // with an image content type; jsDelivr gives the file in this repo
-          // that. Until the repo is on GitHub the tile shows Home's fallback.
-          // Made with ../realm-icons: ph/chart-bar, grain=0.
+          // with an image content type; jsDelivr serves the file in this repo
+          // that way. Made with realm-icons: ph/chart-bar, grain=0.
           icon:
             "https://cdn.jsdelivr.net/gh/yourrealm/analytics@main/web/public/logo.svg",
           // Per client IP, and tracking and the dashboard share it. Generous,
