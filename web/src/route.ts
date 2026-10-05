@@ -1,14 +1,18 @@
-// Two views and some query parameters don't need a router library: the path
+// Three views and some query parameters don't need a router library: the path
 // picks the view, the query holds the dashboard's filters, so every view can
 // be bookmarked.
 
 import { useEffect, useState } from "react";
 
-export type View = "dashboard" | "sites";
+export type View = "dashboard" | "sites" | "settings";
 
 function read() {
   return {
-    view: (location.pathname.startsWith("/sites") ? "sites" : "dashboard") as View,
+    view: (location.pathname.startsWith("/sites")
+      ? "sites"
+      : location.pathname.startsWith("/settings")
+      ? "settings"
+      : "dashboard") as View,
     query: new URLSearchParams(location.search),
   };
 }

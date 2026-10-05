@@ -13,9 +13,9 @@ sites, with its own React dashboard behind Realm's login.
   the JSON API and the built dashboard. With DB-IP's country database it is the
   whole Docker image (`ghcr.io/yourrealm/analytics`, distroless/cc, amd64 and
   arm64). It idles near 2 MiB.
-- `web/`: React 19 + Vite + Tailwind 4 + Recharts. Two views, `/` (dashboard)
-  and `/sites`, with filters in the URL. `web/src/api.ts` mirrors the server's
-  response shapes, so change both together.
+- `web/`: React 19 + Vite + Tailwind 4 + Recharts. Three views, `/` (dashboard),
+  `/sites` and `/settings`, with filters in the URL. `web/src/api.ts` mirrors
+  the server's response shapes, so change both together.
 - `realm.tsx`: the Realm manifest (service, gate, trusted header, tile). It has
   no Realm UI surfaces and never runs in the container. We dropped the SDK pages
   for a real frontend.
@@ -107,10 +107,10 @@ up new DB-IP data.
 
 ## Google Search Console (server/src/google.rs, crypto.rs)
 
-- **One service account key per user**, pasted on the Sites view. It covers all
-  of that user's sites; each site picks a property the account can read. A
-  single install-wide key was rejected: any user could then attach any property
-  it can see.
+- **One service account key per user**, chosen in Settings. It covers all of
+  that user's sites; each site picks a property the account can read. A single
+  install-wide key was rejected: any user could then attach any property it can
+  see.
 - The server signs an RS256 JWT with the key (`crypto::jwt`, on ring), trades it
   for an hour-long token (cached per user), and calls `searchAnalytics.query`
   twice per view: totals, then the top 10 queries. Results are cached for an
@@ -146,8 +146,8 @@ up new DB-IP data.
 - Raw events only, no rollups: `GROUP BY` over the `events_site_ts` index is
   fast enough at per-user, few-site volume.
 - Periods (`today`, `yesterday`, `7d`, `30d`, `90d`, `365d`) and buckets are in
-  the user's time zone (set on the Sites view, default UTC). Series are bucketed
-  in Rust, because bucket edges follow DST.
+  the user's time zone (set in Settings, default UTC). Series are bucketed in
+  Rust, because bucket edges follow DST.
 - Breakdowns count pageviews only. Totals' `visitors` counts distinct IDs across
   all events. IDs rotate daily, so multi-day visitor counts are upper bounds, as
   in Plausible.
@@ -158,6 +158,12 @@ up new DB-IP data.
   `/assets/*` is cached as immutable (Vite fingerprints it). Any other non-API
   path falls back to `index.html` with `no-cache`, so client-side routes load.
   Unknown `/api/*` paths stay JSON 404s.
+- Sites is a list and a detail panel, stacked on a phone. `?site=<id>` picks a
+  site and `?site=new` opens the add form (also shown when there are none).
+  `GET /api/sites` adds `last_event` and 7-day `visitors` per site
+  (`db::list_sites_activity`) for the status dot and the count. Settings holds
+  what is per user: the Search Console account (a collapsible step guide until
+  connected) and the time zone.
 - No router or data library: `route.ts` (path plus query, history API) and
   `useApi` in `api.ts` (fetch, reload, refresh interval). The dashboard
   refreshes stats every minute.

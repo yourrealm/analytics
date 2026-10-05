@@ -1,12 +1,14 @@
 import { type Me, useApi } from "./api.ts";
 import { Dashboard } from "./Dashboard.tsx";
 import { navigate, useRoute, type View } from "./route.ts";
+import { Settings } from "./Settings.tsx";
 import { Sites } from "./Sites.tsx";
 import { ErrorText } from "./ui.tsx";
 
 const NAV: { view: View; label: string; href: string }[] = [
   { view: "dashboard", label: "Dashboard", href: "/" },
   { view: "sites", label: "Sites", href: "/sites" },
+  { view: "settings", label: "Settings", href: "/settings" },
 ];
 
 export function App() {
@@ -15,7 +17,7 @@ export function App() {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-6">
-      <header className="flex items-center gap-6">
+      <header className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <span className="flex items-center gap-2 text-base font-bold">
           <picture>
             <source srcSet="/logo-dark.svg" media="(prefers-color-scheme: dark)" />
@@ -42,7 +44,11 @@ export function App() {
       </header>
       <main>
         <ErrorText error={me.error} />
-        {view === "sites" ? <Sites me={me.data} reloadMe={me.reload} /> : <Dashboard query={query} me={me.data} />}
+        {view === "sites"
+          ? <Sites query={query} />
+          : view === "settings"
+          ? <Settings me={me.data} reloadMe={me.reload} />
+          : <Dashboard query={query} me={me.data} />}
       </main>
     </div>
   );

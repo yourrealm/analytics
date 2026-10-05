@@ -13,6 +13,14 @@ export type Site = {
   search_console: string | null;
 };
 
+/** A site in the Sites list, with what it has seen lately. */
+export type SiteActivity = Site & {
+  /** Seconds since the epoch; null until the first visit. */
+  last_event: number | null;
+  /** Distinct visitors over the last 7 days. */
+  visitors: number;
+};
+
 /** `available` is false when the operator did not grant internet access. */
 export type Google = { available: boolean; email: string | null };
 

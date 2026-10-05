@@ -1,4 +1,4 @@
-// Small shared pieces. No component library: the app is two views.
+// Small shared pieces. No component library: the app is three views.
 
 import type { ReactNode } from "react";
 

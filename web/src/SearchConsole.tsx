@@ -1,8 +1,10 @@
-// Google Search Console on the Sites view: one service account key per user
-// (GoogleCard), and a property per site (PropertyPicker).
+// Google Search Console: one service account key per user, set up on the
+// Settings view (GoogleCard), and a property per site, picked on the Sites
+// view (PropertyPicker).
 
 import { type ReactNode, useState } from "react";
 import { api, type Google, type Site } from "./api.ts";
+import { navigate } from "./route.ts";
 import { Button, Card, ErrorText } from "./ui.tsx";
 
 function Ext({ href, children }: { href: string; children: ReactNode }) {
@@ -10,20 +12,6 @@ function Ext({ href, children }: { href: string; children: ReactNode }) {
     <a href={href} target="_blank" rel="noopener" className="font-medium text-accent underline">
       {children}
     </a>
-  );
-}
-
-function Step({ n, title, children }: { n: number; title: ReactNode; children?: ReactNode }) {
-  return (
-    <li className="flex gap-3">
-      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent-soft text-xs font-semibold">
-        {n}
-      </span>
-      <div className="flex min-w-0 flex-1 flex-col gap-1 pt-0.5">
-        <span className="font-medium">{title}</span>
-        {children && <span className="text-muted">{children}</span>}
-      </div>
-    </li>
   );
 }
 
@@ -58,16 +46,93 @@ const LINKS = {
   users: "https://search.google.com/search-console/users",
 };
 
-export function GoogleCard({ google, properties, onChange, onRefresh }: {
+const STEPS: { title: ReactNode; body: ReactNode }[] = [
+  {
+    title: "Pick or create a Google Cloud project",
+    body: (
+      <>
+        Any project works, and this costs nothing. Use one you already have, or{" "}
+        <Ext href={LINKS.project}>create a Google Cloud project</Ext>.
+      </>
+    ),
+  },
+  {
+    title: "Turn on the Search Console API",
+    body: (
+      <>
+        Open the <Ext href={LINKS.api}>Google Search Console API</Ext>, pick your project if Google asks, then confirm
+        to enable it.
+      </>
+    ),
+  },
+  {
+    title: "Create a service account",
+    body: (
+      <>
+        <Ext href={LINKS.createAccount}>Create a service account</Ext>: pick your project, give it any name (for example
+        "analytics"), and click Done. It needs no roles or permissions, so skip Create and continue.
+      </>
+    ),
+  },
+  {
+    title: "Download a key for it",
+    body: (
+      <>
+        In the <Ext href={LINKS.accounts}>service accounts list</Ext>, click the account's email, open the Keys tab,
+        and choose Add key → Create new key → JSON → Create. Your browser downloads a .json file once; keep it safe. If
+        key creation is blocked, your Google Cloud organization forbids it (the default for organizations created since
+        May 2024); a project with no organization, under a personal Google account, works.
+      </>
+    ),
+  },
+];
+
+/** One collapsible step: a numbered header (a tick once done) over its body. */
+function Step({ n, title, open, done, onToggle, children }: {
+  n: number;
+  title: ReactNode;
+  open: boolean;
+  done: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <li className="overflow-hidden rounded-xl border border-line">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={onToggle}
+        className="flex min-h-12 w-full cursor-pointer items-center gap-3 px-3.5 py-2.5 text-left text-sm hover:bg-accent-soft"
+      >
+        <span
+          className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+            done ? "bg-ok text-white" : "bg-accent-soft"
+          }`}
+        >
+          {done ? "✓" : n}
+        </span>
+        <span className="flex-1 font-medium">{title}</span>
+        <span className="text-muted" aria-hidden>{open ? "▴" : "▾"}</span>
+      </button>
+      {open && <div className="flex flex-col gap-3 px-3.5 pb-3.5 pl-[50px] text-sm text-muted">{children}</div>}
+    </li>
+  );
+}
+
+export function GoogleCard({ google, properties, sites, onChange, onRefresh }: {
   google: Google | undefined;
   /** What the connected account can read; undefined while loading. */
   properties: string[] | undefined;
+  /** The user's sites, to show which ones are linked. */
+  sites: Site[];
   onChange: () => void;
   /** Reloads `properties`, after adding the account in Search Console. */
   onRefresh: () => void;
 }) {
   const [key, setKey] = useState("");
   const [fileName, setFileName] = useState<string>();
+  const [open, setOpen] = useState(0);
+  const [done, setDone] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -99,9 +164,17 @@ export function GoogleCard({ google, properties, onChange, onRefresh }: {
   }
 
   if (google.email) {
+    const linked = sites.filter((s) => s.search_console);
     return (
       <Card
-        title="Google Search Console"
+        title={
+          <span className="flex items-center gap-2">
+            Google Search Console
+            <span className="flex items-center gap-1.5 text-xs font-normal text-muted">
+              <span className="size-2 rounded-full bg-ok" /> Connected
+            </span>
+          </span>
+        }
         action={
           <Button variant="ghost" disabled={busy} onClick={() => run(() => api("/api/google", { method: "DELETE" }))}>
             Disconnect
@@ -110,36 +183,39 @@ export function GoogleCard({ google, properties, onChange, onRefresh }: {
       >
         <div className="flex flex-col gap-4 text-sm">
           <div className="flex flex-wrap items-center gap-2">
-            <span>Connected as</span>
-            <code className="rounded bg-bg px-1.5 py-0.5 font-mono text-xs">{google.email}</code>
+            <code className="break-all rounded-lg border border-line bg-bg px-2.5 py-1.5 font-mono text-xs">
+              {google.email}
+            </code>
             <CopyButton value={google.email} />
           </div>
-          <div className="flex flex-col gap-3">
-            <span className="text-muted">
-              For each site, let this account read its Search Console property:
+          <div className="flex flex-col gap-1.5 rounded-xl border border-line px-4 py-3">
+            <span className="font-semibold">
+              {properties === undefined
+                ? "Checking what this account can read…"
+                : properties.length === 0
+                ? "This account can't read any property yet"
+                : `This account can read ${properties.length} ${properties.length === 1 ? "property" : "properties"}`}
             </span>
-            <ol className="flex flex-col gap-3">
-              <Step
-                n={1}
-                title={<>Open <Ext href={LINKS.users}>Users and permissions</Ext> in Search Console</>}
+            <span className="text-muted">
+              {linked.length
+                ? `Linked: ${linked.map((s) => `${s.name} → ${s.search_console}`).join(", ")}.`
+                : "No site is linked yet."} Pick a property on each site in{" "}
+              <a
+                href="/sites"
+                onClick={(e) => (e.preventDefault(), navigate("/sites"))}
+                className="text-accent underline"
               >
-                Pick the property at the top. The page is under Settings, and only the property's owner sees it.
-              </Step>
-              <Step n={2} title="Click Add user">
-                Paste the address above, set Permission to Restricted (view only), and add it.
-              </Step>
-              <Step n={3} title="Come back and pick the property on the site above">
-                {properties === undefined
-                  ? "Loading what this account can read…"
-                  : properties.length === 0
-                  ? "This account can't read any property yet."
-                  : `This account can read ${properties.length} ${properties.length === 1 ? "property" : "properties"}.`}
-                {" "}
-                <button type="button" onClick={onRefresh} className="cursor-pointer font-medium text-accent underline">
-                  Check again
-                </button>
-              </Step>
-            </ol>
+                Sites
+              </a>.
+            </span>
+            <span className="text-muted">
+              Missing one? Open <Ext href={LINKS.users}>Users and permissions</Ext>{" "}
+              for the property in Search Console, click Add user, paste the address above and set Permission to
+              Restricted. Only the property's owner can. Then{" "}
+              <button type="button" onClick={onRefresh} className="cursor-pointer font-medium text-accent underline">
+                check again
+              </button>.
+            </span>
           </div>
           <ErrorText error={error} />
         </div>
@@ -152,6 +228,7 @@ export function GoogleCard({ google, properties, onChange, onRefresh }: {
     setKey(await file.text());
     setFileName(file.name);
   };
+  const toggle = (i: number) => setOpen(open === i ? -1 : i);
 
   return (
     <Card title="Google Search Console">
@@ -160,67 +237,63 @@ export function GoogleCard({ google, properties, onChange, onRefresh }: {
           Show the Google searches that led to your sites. Google only shares them with an account you set up once, a
           service account, which then reads every property you add it to. It takes about five minutes.
         </p>
-        <ol className="flex flex-col gap-3">
-          <Step n={1} title={<>Pick or <Ext href={LINKS.project}>create a Google Cloud project</Ext></>}>
-            Any project works, and this costs nothing. Use one you already have if you like.
-          </Step>
-          <Step n={2} title={<>Turn on the <Ext href={LINKS.api}>Google Search Console API</Ext></>}>
-            Pick your project if Google asks, then confirm to enable it.
-          </Step>
-          <Step n={3} title={<><Ext href={LINKS.createAccount}>Create a service account</Ext></>}>
-            Pick your project, give the account any name (for example "analytics"), and click Done. It needs no
-            roles or permissions, so skip Create and continue.
-          </Step>
-          <Step n={4} title="Download a key for it">
-            In the <Ext href={LINKS.accounts}>service accounts list</Ext>, click the account's email, open the Keys
-            tab, and choose Add key → Create new key → JSON → Create. Your browser downloads a .json file once; keep
-            it safe. If key creation is blocked, your Google Cloud organization forbids it (the default for
-            organizations created since May 2024); a project with no organization, under a personal Google account,
-            works.
-          </Step>
-          <Step n={5} title="Choose that file here">
-            <span className="mt-1 flex flex-col gap-2">
-              <label className="flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-1.5 font-medium text-fg hover:bg-accent-soft">
-                <input
-                  type="file"
-                  accept="application/json,.json"
-                  aria-label="Service account key file"
-                  className="sr-only"
-                  onChange={(e) => readFile(e.target.files?.[0])}
-                />
-                {fileName ?? "Choose file…"}
-              </label>
-              <details>
-                <summary className="cursor-pointer">Or paste its contents</summary>
-                <textarea
-                  aria-label="Service account key"
-                  value={key}
-                  onChange={(e) => (setKey(e.target.value), setFileName(undefined))}
-                  rows={4}
-                  spellCheck={false}
-                  placeholder='{"type": "service_account", ...}'
-                  className="mt-2 w-full rounded-lg border border-line bg-bg p-3 font-mono text-xs text-fg outline-none placeholder:text-muted focus:border-accent"
-                />
-              </details>
-            </span>
+        <ol className="flex flex-col gap-1.5">
+          {STEPS.map((s, i) => (
+            <Step key={i} n={i + 1} title={s.title} open={open === i} done={i < done} onToggle={() => toggle(i)}>
+              <span>{s.body}</span>
+              <button
+                type="button"
+                onClick={() => (setOpen(i + 1), setDone(Math.max(done, i + 1)))}
+                className="cursor-pointer self-start font-medium text-accent"
+              >
+                Done, next step
+              </button>
+            </Step>
+          ))}
+          <Step
+            n={STEPS.length + 1}
+            title="Choose that file here"
+            open={open === STEPS.length}
+            done={false}
+            onToggle={() => toggle(STEPS.length)}
+          >
+            <label className="flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-1.5 font-medium text-fg hover:bg-accent-soft">
+              <input
+                type="file"
+                accept="application/json,.json"
+                aria-label="Service account key file"
+                className="sr-only"
+                onChange={(e) => readFile(e.target.files?.[0])}
+              />
+              {fileName ?? "Choose file…"}
+            </label>
+            <details>
+              <summary className="cursor-pointer">Or paste its contents</summary>
+              <textarea
+                aria-label="Service account key"
+                value={key}
+                onChange={(e) => (setKey(e.target.value), setFileName(undefined))}
+                rows={4}
+                spellCheck={false}
+                placeholder='{"type": "service_account", ...}'
+                className="mt-2 w-full rounded-lg border border-line bg-bg p-3 font-mono text-xs text-fg outline-none placeholder:text-muted focus:border-accent"
+              />
+            </details>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                disabled={busy || !key.trim()}
+                onClick={() => run(() => api("/api/google", { method: "PUT", body: { key } }))}
+              >
+                {busy ? "Checking with Google…" : "Connect"}
+              </Button>
+              <span className="text-xs">
+                The key is checked with Google, then stored encrypted. A brand-new account can take a minute before
+                Google accepts it.
+              </span>
+            </div>
+            <ErrorText error={error} />
           </Step>
         </ol>
-        <div className="flex items-center gap-3">
-          <Button
-            disabled={busy || !key.trim()}
-            onClick={() => run(() => api("/api/google", { method: "PUT", body: { key } }))}
-          >
-            {busy ? "Checking with Google…" : "Connect"}
-          </Button>
-          <span className="text-xs text-muted">
-            The key is checked with Google, then stored encrypted. A brand-new account can take a minute before Google
-            accepts it.
-          </span>
-        </div>
-        <ErrorText error={error} />
-        <p className="text-xs text-muted">
-          After connecting, you add the account's address to each property in Search Console. The next step shows how.
-        </p>
       </div>
     </Card>
   );
@@ -256,7 +329,7 @@ export function PropertyPicker({ site, properties, onChange }: {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={`gsc-${site.id}`} className="text-sm font-medium">Search Console property</label>
+      <label htmlFor={`gsc-${site.id}`} className="text-sm font-semibold">Search Console property</label>
       <select
         id={`gsc-${site.id}`}
         value={current}
@@ -269,7 +342,7 @@ export function PropertyPicker({ site, properties, onChange }: {
       </select>
       {properties && options.length === 0 && (
         <span className="text-xs text-muted">
-          The service account can't read any property yet: see Google Search Console below.
+          The service account can't read any property yet: see Settings.
         </span>
       )}
       <ErrorText error={error} />

@@ -80,11 +80,11 @@ The dashboard can show the Google searches that led to a site, next to its
 visits. It needs internet access, granted at install or later in the app's
 settings.
 
-Each user connects one Google service account. The **Sites** view walks you
-through it with direct links: create the account in Google Cloud, download its
-JSON key, choose the file, then add the account's email as a user on each Search
-Console property. Pick the property on each site. The key is checked with Google
-and stored encrypted.
+Each user connects one Google service account. **Settings** walks you through it
+step by step, with direct links: create the account in Google Cloud, download
+its JSON key, choose the file, then add the account's email as a user on each
+Search Console property. Then pick the property on each site in **Sites**. The
+key is checked with Google and stored encrypted.
 
 ## Privacy
 

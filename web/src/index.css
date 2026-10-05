@@ -9,6 +9,9 @@
   --accent: oklch(0.55 0.2 265);
   --accent-soft: oklch(0.55 0.2 265 / 0.12);
   --danger: oklch(0.58 0.2 25);
+  /* Site status: events arriving, or waiting for the first. */
+  --ok: oklch(0.6 0.15 155);
+  --wait: oklch(0.75 0.14 75);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,6 +24,8 @@
     --accent: oklch(0.7 0.16 265);
     --accent-soft: oklch(0.7 0.16 265 / 0.16);
     --danger: oklch(0.7 0.17 25);
+    --ok: oklch(0.72 0.15 155);
+    --wait: oklch(0.8 0.13 80);
   }
 }
 
@@ -33,6 +38,8 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-danger: var(--danger);
+  --color-ok: var(--ok);
+  --color-wait: var(--wait);
 }
 
 body {

@@ -104,14 +104,16 @@ shoot("dashboard-7d-pageviews", { ...desktop, colorScheme: "light" }, "/?period=
 shoot("dashboard-phone", { ...phone, colorScheme: "light" }, "/");
 shoot("sites-light", { ...desktop, colorScheme: "light" }, "/sites");
 shoot("sites-dark", { ...desktop, colorScheme: "dark" }, "/sites");
+shoot("sites-phone", { ...phone, colorScheme: "light" }, "/sites");
+shoot("settings-light", { ...desktop, colorScheme: "light" }, "/settings");
 
-// Search Console before connecting: the setup steps and the paste box.
-test("sites-search-console-setup", async ({ browser }) => {
+// Search Console before connecting: the setup steps, the first one open.
+test("settings-search-console-setup", async ({ browser }) => {
   const ctx = await browser.newContext({ ...desktop, extraHTTPHeaders: { "X-Analytics-User": "newcomer" } });
   await ctx.request.post(`${SERVER}/api/sites`, { data: { name: "blog.example", hostnames: ["blog.example"] } });
   const page = await ctx.newPage();
-  await page.goto(`${SERVER}/sites`);
-  await expect(page.getByRole("button", { name: "Connect" })).toBeVisible();
-  await page.screenshot({ path: `${OUT}/sites-search-console-setup.png`, fullPage: true });
+  await page.goto(`${SERVER}/settings`);
+  await expect(page.getByRole("button", { name: "Done, next step" })).toBeVisible();
+  await page.screenshot({ path: `${OUT}/settings-search-console-setup.png`, fullPage: true });
   await ctx.close();
 });

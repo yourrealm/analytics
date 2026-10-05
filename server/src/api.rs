@@ -411,11 +411,19 @@ async fn put_settings(
     Ok(Json(serde_json::json!({ "timezone": tz })))
 }
 
+/// The Sites list counts visitors over the last week.
+const ACTIVITY_WINDOW: i64 = 7 * 86_400;
+
 async fn list_sites(
     State(state): State<AppState>,
     Identity(user): Identity,
-) -> Result<Json<Vec<db::Site>>, ApiError> {
-    Ok(Json(state.db(move |c| db::list_sites(c, user.id)).await?))
+) -> Result<Json<Vec<db::SiteActivity>>, ApiError> {
+    let since = state.now() - ACTIVITY_WINDOW;
+    Ok(Json(
+        state
+            .db(move |c| db::list_sites_activity(c, user.id, since))
+            .await?,
+    ))
 }
 
 #[derive(Deserialize)]
@@ -921,6 +929,9 @@ mod tests {
 
         let (_, _, mine) = call(&app, request(Method::GET, "/api/sites", &[ANN], None)).await;
         assert_eq!(mine.as_array().unwrap().len(), 1);
+        // No visit yet: the Sites list shows it waiting.
+        assert_eq!(mine[0]["last_event"], Value::Null);
+        assert_eq!(mine[0]["visitors"], 0);
         let (_, _, theirs) = call(&app, request(Method::GET, "/api/sites", &[BOB], None)).await;
         assert_eq!(theirs, json!([]));
 
@@ -1007,6 +1018,10 @@ mod tests {
         assert_eq!(s["referrers"][0]["key"], "news.ycombinator.com");
         assert_eq!(s["devices"][0]["key"], "laptop");
         assert_eq!(s["events"][0]["name"], "signup");
+
+        let (_, _, list) = call(&app, request(Method::GET, "/api/sites", &[ANN], None)).await;
+        assert_eq!(list[0]["last_event"], NOON);
+        assert_eq!(list[0]["visitors"], 2);
 
         let (_, _, p) = call(
             &app,

@@ -18,8 +18,11 @@ test("add a site, get its snippet, see a visit on the dashboard", async ({ brows
 
   await app.getByLabel("Site name").fill("Blog");
   await app.getByLabel("Allowed hostnames").fill("site.test");
-  await app.getByRole("button", { name: "Add site" }).click();
+  await app.getByRole("button", { name: "Create site" }).click();
 
+  // The new site opens with its snippet, waiting for its first visit.
+  await expect(app.getByRole("button", { name: /Blog/, pressed: true })).toBeVisible();
+  await expect(app.getByText("Waiting for the first visit")).toBeVisible();
   const snippet = app.getByLabel("Tracking snippet");
   await expect(snippet).toContainText(`src="${SERVER}/script.js"`);
   const site = (await snippet.textContent())!.match(/data-entity="([a-z0-9]+)"/)![1]!;
@@ -32,7 +35,12 @@ test("add a site, get its snippet, see a visit on the dashboard", async ({ brows
   });
   expect((await sent).status()).toBe(204);
 
-  await app.getByRole("link", { name: "Dashboard" }).click();
+  // The Sites list sees it: the snippet works, one visitor this week.
+  await app.reload();
+  await expect(app.getByText(/Last event just now/)).toBeVisible();
+  await expect(app.getByRole("button", { name: /Blog/ })).toContainText("1");
+
+  await app.getByRole("link", { name: "Dashboard", exact: true }).click();
   await app.getByRole("tab", { name: "Today" }).click();
   await expect(app).toHaveURL(/period=today/);
   await expect(app.getByRole("button", { name: /Visitors\s*1/ })).toBeVisible();
