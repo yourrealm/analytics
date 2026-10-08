@@ -22,6 +22,7 @@ import { createApp, r } from "@yourrealm/sdk";
 
 export default createApp({
   name: "analytics",
+  icon: "ph:chart-bar",
   description:
     "Privacy-friendly web analytics: pageviews, referrers, countries and custom events, per user.",
 
@@ -75,11 +76,6 @@ export default createApp({
           // app's own name stays lowercase, as an identifier).
           tile: true,
           name: "Analytics",
-          // Home fetches the icon itself, once, and needs a public https URL
-          // with an image content type; jsDelivr serves the file in this repo
-          // that way. Made with realm-icons: ph/chart-bar, grain=0.
-          icon:
-            "https://cdn.jsdelivr.net/gh/yourrealm/analytics@main/web/public/logo.svg",
           // Per client IP, and tracking and the dashboard share it. Generous,
           // because many visitors can share one IP (offices, carrier NAT, an
           // undeclared CDN) and their pageviews would be dropped with a 429.

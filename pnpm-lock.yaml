@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@yourrealm/sdk':
-        specifier: 0.0.0-alpha.1421.7a33686e
-        version: 0.0.0-alpha.1421.7a33686e(@types/react@19.3.0)(redux@5.0.1)
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -42,6 +39,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: 6.1.2
         version: 6.1.2(vite@8.3.2(@types/node@26.6.4)(esbuild@0.25.7)(jiti@2.7.0)(yaml@2.9.1))
+      '@yourrealm/sdk':
+        specifier: 0.0.0-alpha.1443.45b20c0a
+        version: 0.0.0-alpha.1443.45b20c0a(@types/react@19.3.0)(redux@5.0.1)
       esbuild:
         specifier: 0.25.7
         version: 0.25.7
@@ -961,8 +961,8 @@ packages:
       oxc-transform-react:
         optional: true
 
-  '@yourrealm/sdk@0.0.0-alpha.1421.7a33686e':
-    resolution: {integrity: sha512-SYl5XWRC22RWHg36S+UDgHitiztff8AIWfXTWwDQAxXbyLEKJQGaUBd7h3Ob3xGdU3GULmW3iOx1hAgcZN8QAw==}
+  '@yourrealm/sdk@0.0.0-alpha.1443.45b20c0a':
+    resolution: {integrity: sha512-FIoghgTrCdISS5iWnGAQBlYCl8kIEc0+VoHDI4dZMPcYHkjFKNLBfZpmVfI9aW4r2NJUlOsCNbZEgjm+pPLKzA==}
     hasBin: true
 
   '@zag-js/accordion@1.43.3':
@@ -2524,7 +2524,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.1
       vite: 8.3.2(@types/node@26.6.4)(esbuild@0.25.7)(jiti@2.7.0)(yaml@2.9.1)
 
-  '@yourrealm/sdk@0.0.0-alpha.1421.7a33686e(@types/react@19.3.0)(redux@5.0.1)':
+  '@yourrealm/sdk@0.0.0-alpha.1443.45b20c0a(@types/react@19.3.0)(redux@5.0.1)':
     dependencies:
       '@ark-ui/react': 5.39.2(@preact/compat@18.3.2(preact@10.29.8))(@preact/compat@18.3.2(preact@10.29.8))
       '@jitl/quickjs-wasmfile-release-asyncify': 0.32.0

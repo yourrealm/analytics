@@ -175,8 +175,9 @@ up new DB-IP data.
 - The mark in `web/public` (logo, favicon, icon-512) comes from realm-icons
   (`yourrealm/icons`): `ph/chart-bar` with `grain=0`, because the default heavy
   grain looks like noise at header size. It is that service's five-file set
-  (logo, dark logo, favicon SVG and ICO, 512 px PNG). `router.icon` hotlinks
-  `logo.svg` through jsDelivr from `yourrealm/analytics@main`.
+  (logo, dark logo, favicon SVG and ICO, 512 px PNG). The app's icon in Home is
+  not one of these files: it is `icon: "ph:chart-bar"` on `createApp`, the same
+  mark, drawn by Home with the SDK's port of the Realm icon service.
 - `e2e/screenshots.spec.ts` seeds a month of traffic through the real ingest
   API, backdates it in SQLite, and screenshots every view in light, dark and
   phone. With `server/data/geo.mmdb` present (`pnpm geoip`) countries resolve.
