@@ -80,6 +80,10 @@ export default createApp({
           // because many visitors can share one IP (offices, carrier NAT, an
           // undeclared CDN) and their pageviews would be dropped with a 429.
           rateLimit: { requests: 600, window: "10s" },
+          headers: {
+            "Content-Security-Policy":
+              "default-src 'self'; img-src 'self' data:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'",
+          },
         },
         volumes: [
           {

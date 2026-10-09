@@ -33,7 +33,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
-    "@yourrealm/sdk": "0.0.0-alpha.1443.45b20c0a",
+    "@yourrealm/sdk": "0.0.0-alpha.1451.8a8a7d44",
     "esbuild": "0.25.7",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
