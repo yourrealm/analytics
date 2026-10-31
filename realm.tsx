@@ -22,7 +22,7 @@ import { createApp, r } from "@yourrealm/sdk";
 
 export default createApp({
   name: "analytics",
-  icon: "ph:chart-bar",
+  icon: "ph:chart-bar:teal",
   description:
     "Privacy-friendly web analytics: pageviews, referrers, countries and custom events, per user.",
 
