@@ -5,8 +5,9 @@
 //!   `POST /api/event`. The gate in realm.tsx admits exactly these on shape;
 //!   the checks that matter (site exists, host allowed) happen here.
 //! - The owner, through Home: everything else under `/api/`. The gate injects
-//!   `X-Analytics-User` for a Home session and strips any client copy, so its
-//!   presence is the identity. Each user sees only their own sites.
+//!   the user header (`X-Analytics-User`, or `ANALYTICS_USER_HEADER`) for a
+//!   Home session and strips any client copy, so its presence is the identity.
+//!   Each user sees only their own sites.
 //! - The owner's browser: the React app from `web/`, served from disk with a
 //!   fallback to `index.html` for client-side routes. The gate puts it behind
 //!   the same Home session, so the app's API calls carry the header too.
@@ -21,7 +22,7 @@ use axum::body::Bytes;
 use axum::extract::rejection::JsonRejection;
 use axum::extract::{ConnectInfo, FromRequest, FromRequestParts, Path, Query, Request, State};
 use axum::http::request::Parts;
-use axum::http::{HeaderMap, HeaderValue, StatusCode, header};
+use axum::http::{HeaderMap, HeaderName, HeaderValue, StatusCode, header};
 use axum::response::{IntoResponse, Response};
 use axum::routing::{any, get, post, put};
 use axum::{Extension, Json, Router};
@@ -36,8 +37,14 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use tower_http::services::{ServeDir, ServeFile};
 use tower_http::set_header::SetResponseHeaderLayer;
 
-/// Must match `getTrustedHeaders` in realm.tsx.
-const USER_HEADER: &str = "x-analytics-user";
+/// The header the proxy in front puts the signed-in username in, unless
+/// `ANALYTICS_USER_HEADER` names another. Must match `getTrustedHeaders` in
+/// realm.tsx.
+pub const DEFAULT_USER_HEADER: &str = "x-analytics-user";
+/// On every response. It matters on the dashboard's documents; on the tracker
+/// paths, which other sites' pages load as a script or fetch, a browser
+/// ignores it, so it can't break them.
+const CSP: &str = "default-src 'self'; img-src 'self' data:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'";
 const MAX_USERNAME: usize = 64;
 const MAX_SITE_NAME: usize = 100;
 const MAX_HOSTNAMES: usize = 20;
@@ -65,6 +72,19 @@ pub struct AppState {
     /// Search results by (property, from, to), for an hour: the dashboard
     /// refreshes every minute and Google's data moves daily.
     searches: Arc<Mutex<SearchCache>>,
+    /// Carries the signed-in username; see `user_header`.
+    user_header: HeaderName,
+}
+
+/// The user header from `ANALYTICS_USER_HEADER`'s value: unset or blank is
+/// `DEFAULT_USER_HEADER`, anything else must be a valid header name (any case).
+pub fn user_header(value: Option<&str>) -> Result<HeaderName, String> {
+    let name = value
+        .map(str::trim)
+        .filter(|v| !v.is_empty())
+        .unwrap_or(DEFAULT_USER_HEADER);
+    HeaderName::from_bytes(name.as_bytes())
+        .map_err(|_| format!("ANALYTICS_USER_HEADER: not a header name: {name:?}"))
 }
 
 fn system_now() -> i64 {
@@ -75,10 +95,17 @@ fn system_now() -> i64 {
 }
 
 impl AppState {
-    pub fn new(conn: Connection, geo: Geo, sealer: Sealer, google: Option<google::Client>) -> Self {
+    pub fn new(
+        conn: Connection,
+        geo: Geo,
+        sealer: Sealer,
+        google: Option<google::Client>,
+        user_header: HeaderName,
+    ) -> Self {
         let mut state = Self::with_clock(conn, geo, Arc::new(system_now));
         state.sealer = Arc::new(sealer);
         state.google = google;
+        state.user_header = user_header;
         state
     }
 
@@ -91,6 +118,7 @@ impl AppState {
             google: None,
             tokens: Arc::default(),
             searches: Arc::default(),
+            user_header: HeaderName::from_static(DEFAULT_USER_HEADER),
         }
     }
 
@@ -139,7 +167,7 @@ pub fn router(state: AppState, web: Option<&FsPath>) -> Router {
         .route("/api/sites/{id}/search", get(site_search))
         .route("/api/{*rest}", any(|| async { ApiError::NotFound }))
         .with_state(state);
-    match web {
+    let app = match web {
         Some(dir) => api
             // Vite fingerprints everything under assets/, so it never changes.
             .nest_service(
@@ -160,7 +188,11 @@ pub fn router(state: AppState, web: Option<&FsPath>) -> Router {
                     .service(ServeDir::new(dir).fallback(ServeFile::new(dir.join("index.html")))),
             ),
         None => api.fallback(|| async { ApiError::NotFound }),
-    }
+    };
+    app.layer(SetResponseHeaderLayer::overriding(
+        header::CONTENT_SECURITY_POLICY,
+        HeaderValue::from_static(CSP),
+    ))
 }
 
 enum ApiError {
@@ -229,7 +261,7 @@ impl FromRequestParts<AppState> for Identity {
     async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self, ApiError> {
         let username = parts
             .headers
-            .get(USER_HEADER)
+            .get(&state.user_header)
             .and_then(|v| v.to_str().ok())
             .map(str::trim)
             .filter(|s| !s.is_empty() && s.len() <= MAX_USERNAME)
@@ -1212,6 +1244,56 @@ mod tests {
         .await;
         assert_eq!(code, StatusCode::BAD_REQUEST);
         assert!(err["error"].as_str().unwrap().contains("paste it again"));
+    }
+
+    #[test]
+    fn the_user_header_comes_from_analytics_user_header() {
+        assert_eq!(user_header(None).unwrap(), "x-analytics-user");
+        assert_eq!(user_header(Some(" ")).unwrap(), "x-analytics-user");
+        assert_eq!(user_header(Some("Remote-User")).unwrap(), "remote-user");
+        assert!(user_header(Some("Remote User")).is_err());
+    }
+
+    #[tokio::test]
+    async fn a_configured_user_header_replaces_the_default() {
+        let mut state = AppState::with_clock(db::open_memory(), Geo::none(), Arc::new(|| NOON));
+        state.user_header = user_header(Some("Remote-User")).unwrap();
+        let app = router(state, None);
+        let (status, _, me) = call(
+            &app,
+            request(Method::GET, "/api/me", &[("Remote-User", "ann")], None),
+        )
+        .await;
+        assert_eq!(status, StatusCode::OK, "{me}");
+        assert_eq!(me["username"], "ann");
+        let (status, _, _) = call(&app, request(Method::GET, "/api/me", &[ANN], None)).await;
+        assert_eq!(status, StatusCode::UNAUTHORIZED);
+    }
+
+    #[tokio::test]
+    async fn every_response_carries_the_csp() {
+        let dir = std::env::temp_dir().join(format!("analytics-csp-{}", std::process::id()));
+        std::fs::create_dir_all(dir.join("assets")).unwrap();
+        std::fs::write(dir.join("index.html"), "<!doctype html>app").unwrap();
+        let app = router(
+            AppState::with_clock(db::open_memory(), Geo::none(), Arc::new(|| NOON)),
+            Some(&dir),
+        );
+        for (method, path, who) in [
+            (Method::GET, "/", None),
+            (Method::GET, "/sites/abc", None),
+            (Method::GET, "/api/me", Some(ANN)),
+            (Method::GET, "/api/me", None),
+            (Method::GET, "/api/nope", Some(ANN)),
+            (Method::GET, "/script.js", None),
+            (Method::OPTIONS, "/api/event", None),
+            (Method::POST, "/api/event", None),
+        ] {
+            let headers: Vec<_> = who.into_iter().collect();
+            let (_, h, _) = call(&app, request(method.clone(), path, &headers, None)).await;
+            assert_eq!(h[header::CONTENT_SECURITY_POLICY], CSP, "{method} {path}");
+        }
+        std::fs::remove_dir_all(dir).ok();
     }
 
     #[test]

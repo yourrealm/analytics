@@ -64,15 +64,23 @@ up new DB-IP data.
 - **The dashboard and owner routes** (everything except the two tracker paths
   below): the Realm gate injects `X-Analytics-User: <username>`
   (`getTrustedHeaders`) for a Home session and strips any client copy. The
-  server trusts it and creates the user row on first sight. `USER_HEADER` in
-  `api.rs` must match realm.tsx. Every site query is scoped by `user_id`, and a
-  site that isn't yours is a 404. The dashboard is a same-origin page on the
-  gated subdomain, so its `fetch` calls carry the header without any client-side
-  auth. A browser with no session gets Home's login redirect.
+  server trusts it and creates the user row on first sight.
+  `DEFAULT_USER_HEADER` in `api.rs` must match realm.tsx; env
+  `ANALYTICS_USER_HEADER` names another header for a different proxy
+  (`Remote-User` behind a Caddy `forward_auth` login). Whatever proxy is in
+  front must strip client copies of that header on every path, the tracker paths
+  included. Every site query is scoped by `user_id`, and a site that isn't yours
+  is a 404. The dashboard is a same-origin page on the gated subdomain, so its
+  `fetch` calls carry the header without any client-side auth. A browser with no
+  session gets Home's login redirect.
 - **Tracked pages** are anonymous and cross-origin. `verifyAnonymousRequest`
   admits exactly `POST`/`OPTIONS /api/event` and `GET`/`HEAD /script.js`. The
   server does the real checks: the site exists and the page's host is allowed.
   `realm.test.ts` asserts the gate's exact surface.
+- **Content-Security-Policy**: the server sets it on every response (`CSP` in
+  `api.rs`), so it holds behind any proxy. It is what protects the dashboard; on
+  the tracker paths, loaded as a script or fetched by other sites' pages, the
+  browser ignores it.
 - `router.rateLimit` (600 per 10s) is per client IP and covers every request
   through the ingress, the dashboard's included. Keep it generous: many visitors
   can share one IP (offices, carrier NAT, a CDN not declared to Realm), and over

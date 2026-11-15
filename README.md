@@ -99,6 +99,18 @@ key is checked with Google and stored encrypted.
 This is how Plausible and similar tools work without a consent banner. Your
 privacy policy should still say that you count visits.
 
+## Behind another proxy
+
+The image runs without Realm too: any reverse proxy that logs users in can sit
+in front. It must put the signed-in username in a header, set
+`ANALYTICS_USER_HEADER` to that header's name (the default, `X-Analytics-User`,
+is Realm's), and strip any copy a client sends, on every path. It must let
+`GET`/`HEAD /script.js` and `POST`/`OPTIONS /api/event` through without a login,
+and set `X-Real-IP` to the visitor's address. Data lives in `/data`.
+`ANALYTICS_GOOGLE=1` turns Search Console on, and `ANALYTICS_SECRET` seals the
+stored Google keys (without it, a `secret` file in `/data`). The server sets its
+own Content-Security-Policy.
+
 ## Development
 
 UI work needs neither Realm nor Docker. Run the server and the dashboard side by

@@ -66,8 +66,10 @@ async fn serve() {
     if google.is_none() {
         eprintln!("no internet access granted, Search Console off");
     }
+    let user_header = api::user_header(std::env::var("ANALYTICS_USER_HEADER").ok().as_deref())
+        .unwrap_or_else(|e| panic!("{e}"));
     let app = api::router(
-        api::AppState::new(conn, geo, sealer, google),
+        api::AppState::new(conn, geo, sealer, google, user_header),
         web.as_deref(),
     );
     let addr = SocketAddr::from(([0, 0, 0, 0], port()));
